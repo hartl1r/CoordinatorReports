@@ -1,0 +1,146 @@
+@media screen { 
+	.wholePage {
+		line-height: 1.0;
+		row-gap:0em;
+	}
+	#printPageButton #closePageButton {
+		float: right;
+		display: block;
+	} 
+	.pageButtons {
+		float:right;
+		margin-right:20px;
+		padding-right:20px;
+	} 
+
+   	h1, h2, h3 {
+		color: black;
+		text-align: center;
+		font-family: "Times New Roman",Times, sans-serif,serif;
+   } 
+   	h1 {
+		font-size: 18pt;
+		break-before: avoid;
+	}
+	
+	h2 {
+		font-size: 16pt;
+	}
+	
+	h3 {
+		font-size: 14pt;
+	}
+	.reportHdgLine1 {
+		display:grid;
+		grid-template-columns: 1fr 1fr 1fr;
+		grid-template-areas:". titleArea  btnArea";
+		text-align:right;
+	}
+	.reportHdgLine1Title {
+		grid-area: titleArea;
+	}
+	.reportHdgLine1Buttons {
+		grid-area:btnArea
+	}
+
+	.colHdg {
+		margin-left:15em;
+		margin-right:15em;
+		font-weight: bold;
+	}
+	hr {
+		border:2px solid black;
+	}
+	.detailSection {
+		margin-left:15em;
+		margin-right:15em;
+		line-height:2;	
+	}
+	.detailSection .row:nth-child(even) {
+		background-color: lightgray;
+	}
+	
+	
+    
+} 
+
+@media print {
+	.wholePage {
+		page-break-inside: avoid;
+	}
+ 	
+	.pageButtons {
+		display:none;
+		float: none;
+	}
+	.reportHdgLine1 {
+		display:grid;
+		grid-template-columns: 1fr 1fr 1fr;
+		grid-template-areas:". titleArea  btnArea"
+	}
+	.reportHdgLine1Title {
+		grid-area: titleArea;
+	}
+	.reportHdgLine1Buttons {
+		display:none;
+	}
+
+	body {
+		
+		border: 1px solid white;
+        height: 100%;
+        page-break-after: avoid;
+        page-break-before: avoid;
+	}
+
+	.colHdg {
+		margin-left:5em;
+		margin-right:5em;
+		font-size:.75em;
+		font-weight: bold;
+	}
+	hr {
+		border:2px solid black;
+	}
+	.detailSection {
+		margin-left:5em;
+		margin-right:5em;
+		font-size:.75em;
+		line-height:2;	
+	}
+	.detailSection .row:nth-child(even) {
+		background-color: lightgray;
+	}
+
+	h1 {
+		font-size: 16pt;
+		break-before: avoid;
+	}
+			
+	h2 {
+		font-size: 14pt;
+	}
+			
+	h3 {
+		font-size: 12pt;
+	}
+			
+	h1, h2, h3, h4, h5 {
+		text-align:center;
+		font-weight: bold;
+		break-after: avoid;
+		color:black;
+	}
+
+}
+
+@page {
+	size: landscape;
+	orientation: landscape;
+	display:block;
+	position:relative;
+	counter-increment: page;
+	page-break-before: avoid;
+	page-break-after: avoid;
+	page-break-inside: avoid;
+} 

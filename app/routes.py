@@ -36,13 +36,17 @@ def index():
     sqlNames += "WHERE Monitor_Coordinator = 1 "
     sqlNames += "ORDER BY Last_Name, First_Name "
     coordNames = db.engine.execute(sqlNames)
+    
+    # DETERMINE THE FIRST WEEK IN THE LIST TO BE A MONTH PRIOR TO TODAY
+    todays_date = date.today()
+    firstWeek = date.today() - timedelta(30)
    
     # BUILD ARRAY OF MONITOR WEEKS FOR BOTH LOCATIONS
     sqlWeeks = "SELECT Shop_Number as shopNumber, Start_Date,format(Start_Date,'MMM d, yyyy') as DisplayDate, "
     sqlWeeks += "Coordinator_ID as coordID, Last_Name + ', ' + First_Name as coordName, eMail as coordEmail "
     sqlWeeks += " FROM coordinatorsSchedule "
     sqlWeeks += "LEFT JOIN tblMember_Data ON coordinatorsSchedule.Coordinator_ID = tblMember_Data.Member_ID "
-    sqlWeeks += "WHERE Start_Date >= getdate() "
+    sqlWeeks += "WHERE Start_Date >= '" + str(firstWeek) + "' " 
     sqlWeeks += "ORDER BY Shop_Number, Start_Date"
     weeks = db.engine.execute(sqlWeeks)
 
@@ -332,21 +336,17 @@ def printWeeklyMonitorContacts():
     shopRecord = db.session.query(ShopName).filter(ShopName.Shop_Number==shopNumber).first()
     shopName = shopRecord.Shop_Name
     
-    #  DETERMINE START OF WEEK DATE
-    #  CONVERT TO DATE TYPE
+    #  CONVERT WEEK START TO DATE TYPE
     dateScheduledDat = datetime.strptime(dateScheduled,'%Y-%m-%d')
-    dayOfWeek = dateScheduledDat.weekday()
-
-    # GET BEGIN, END DATES FOR REPORT HEADING
-    beginDateDAT = dateScheduledDat 
+    beginDateDAT = dateScheduledDat + timedelta(days=1)
     beginDateSTR = beginDateDAT.strftime('%m-%d-%Y')
 
     endDateDAT = beginDateDAT + timedelta(days=6)
     endDateSTR = endDateDAT.strftime('%m-%d-%Y')
 
-    weekOfHdg = beginDateDAT.strftime('%B %d, %Y')
+    weekOfHdg = dateScheduledDat.strftime('%B %d, %Y')
     
-    # RETRIEVE SCHEDULE FOR SPECIFIC WEEK
+    # GET TODAY'S DATE
     todays_date = date.today()
     todays_dateSTR = todays_date.strftime('%-m-%-d-%Y')
 
@@ -712,6 +712,179 @@ def printSubList():
     return redirect(url_for('/index'))
     
 
+# MONITORS NEEDING TRAINING
+@app.route("/printMonitorsNeedingTraining", methods=['GET'])
+def printMonitorsNeedingTraining():
+    dateScheduled=request.args.get('date')
+    shopNumber=request.args.get('shop')
+    destination = request.args.get('destination')
+
+    # GET LOCATION NAME FOR REPORT HEADING
+    shopRecord = db.session.query(ShopName).filter(ShopName.Shop_Number==shopNumber).first()
+    shopName = shopRecord.Shop_Name
+    
+    #  DETERMINE START OF WEEK DATE
+    #  CONVERT TO DATE TYPE
+    dateScheduledDat = datetime.strptime(dateScheduled,'%Y-%m-%d')
+    dayOfWeek = dateScheduledDat.weekday()
+
+    # GET BEGIN, END DATES FOR REPORT HEADING
+    beginDateDAT = dateScheduledDat 
+    beginDateSTR = beginDateDAT.strftime('%m-%d-%Y')
+
+    endDateDAT = beginDateDAT + timedelta(days=6)
+    endDateSTR = endDateDAT.strftime('%m-%d-%Y')
+
+    weekOfHdg = beginDateDAT.strftime('%B %d, %Y')
+    
+    # RETRIEVE SCHEDULE FOR SPECIFIC WEEK
+    todays_date = date.today()
+    todays_dateSTR = todays_date.strftime('%-m-%-d-%Y')
+
+    # GET COORDINATOR, START AND END DATES FOR SPECIFIED WEEK AND LOCATION
+    weekData = db.session.query(CoordinatorsSchedule)\
+    .filter(CoordinatorsSchedule.Start_Date == dateScheduled)\
+    .filter(CoordinatorsSchedule.Shop_Number == shopNumber)\
+    .first()
+    if weekData == None:
+        flash('This week does not exist.','danger')
+        return redirect(url_for('/index'))
+    startDate = weekData.Start_Date
+    endDate = weekData.End_Date
+    
+    coordinator = db.session.query(Member).filter(Member.Member_ID == weekData.Coordinator_ID).first()
+    if coordinator != None:
+        coordName = coordinator.First_Name
+        if coordinator.NickName != None:
+            coordName += ' (' + coordinator.NickName + ')'
+        coordName += ' ' + coordinator.Last_Name
+    else:
+        coordName = 'Not assigned'
+    
+    # DEFINE DICT AND ARRAY
+    toTrainDict = []
+    toTrainItem = []
+
+    # GET MONITORS ASSIGNED FOR THE WEEK
+    sqlMonitors = "SELECT tblMonitor_Schedule.Member_ID, Min(tblMember_Data.Last_Name) AS Last_Name, "
+    sqlMonitors += "Min(tblMember_Data.First_Name) AS First_Name, Min(tblMember_Data.NickName) AS NickName, "
+    sqlMonitors += "Min(tblMember_Data.Last_Monitor_Training) AS Last_Monitor_Training, tblMember_Data.Home_Phone, "
+    sqlMonitors += "tblMember_Data.Cell_Phone, Min(tblMonitor_Schedule.Date_Scheduled) as Date_Scheduled "
+    sqlMonitors += "FROM tblMonitor_Schedule LEFT JOIN tblMember_Data ON tblMonitor_Schedule.Member_ID = tblMember_Data.Member_ID "
+    sqlMonitors += "WHERE (((tblMonitor_Schedule.Date_Scheduled) Between '12/13/2020' And '12/19/2020')) "
+    sqlMonitors += "GROUP BY tblMonitor_Schedule.Member_ID, tblMember_Data.Home_Phone, tblMember_Data.Cell_Phone "  
+    sqlMonitors += "ORDER BY Min(tblMember_Data.Last_Name), Min(tblMember_Data.First_Name);"
+
+    monitors = db.engine.execute(sqlMonitors)
+    monitorDict = []
+    monitorItem = []
+    
+    for m in monitors:
+        if TrainingNeeded(m.Last_Monitor_Training):
+            displayName = m.Last_Name
+            if m.NickName != None:
+                displayName += ' (' + m.NickName + ')'
+            displayName += ' ' + m.First_Name
+            if m.Home_Phone == None:
+                homePhone = ''
+            else:
+                homePhone = m.Home_Phone
+
+            if m.Cell_Phone == None:
+                cellPhone = ''
+            else:
+                cellPhone = m.Cell_Phone
+
+            dateScheduled = m.Date_Scheduled.strftime('%m-%d-%Y')
+            if m.Last_Monitor_Training != None:
+                lastMonitorTraining = m.Last_Monitor_Training.strftime('%m-%d-%Y')
+            else:
+                lastMonitorTraining = ''
+            
+            toTrainItem = {
+                'name': displayName,
+                'memberID':m.Member_ID,
+                'homePhone':homePhone,
+                'cellPhone':cellPhone,
+                'dateScheduled':dateScheduled,
+                'lastTraining':lastMonitorTraining
+            }
+            toTrainDict.append(toTrainItem)
+    
+    if (destination == 'PDF'):
+        html = render_template("rptMonitorsNeedingTrainong.html",\
+            beginDate=beginDateSTR,coordName=coordName,todaysDate=todays_dateSTR,\
+            locationName=shopName,weekOfHdg=weekOfHdg,toTrainDict=toTrainDict)
+        # DEFINE PATH TO USE TO STORE PDF
+        currentWorkingDirectory = os.getcwd()
+        pdfDirectoryPath = currentWorkingDirectory + "/app/static/pdf"
+        filePath = pdfDirectoryPath + "/rptTrainingNeeded.pdf"
+        options = { 
+            "enable-local-file-access": None
+        }
+        pdfkit.from_string(html,filePath, options=options)
+        return redirect(url_for('index'))
+    else:
+        return render_template("rptTrainingNeeded.html",\
+            beginDate=beginDateSTR,coordName=coordName,todaysDate=todays_dateSTR,\
+            locationName=shopName,weekOfHdg=weekOfHdg,toTrainDict=toTrainDict
+            )
+    
+# LIST TRAINING CLASS ATTENDEES
+@app.route("/printTrainingClass", methods=['GET'])
+def printTrainingClass():
+    trainingDate=request.args.get('date')
+    print('trainingDate - ',trainingDate)
+    shopNumber=request.args.get('shop')
+    destination = request.args.get('destination')
+    trainingDateDAT = datetime.strptime(trainingDate,'%Y-%m-%d')
+    displayTrainingDate = trainingDateDAT.strftime('%B %d, %Y') 
+    
+    # GET TODAYS DATE
+    todays_date = date.today()
+    todaysDate = todays_date.strftime('%-m-%-d-%Y')
+
+    # GET MEMBERS IN TRAINING CLASS
+    members = db.session.query(Member).filter(Member.Last_Monitor_Training == trainingDate).all()
+    
+    if members == None:
+        flash ('No members assigned to this date.','info')
+        return redirect(url_for('index'))
+
+    classDict = []
+    classItem = []
+    print('before for loop')
+    for m in members:
+        displayName = m.Last_Name
+        if m.Last_Monitor_Training != None:
+            lastMonitorTraining = m.Last_Monitor_Training.strftime('%m-%d-%Y')
+        else:
+            lastMonitorTraining = ''
+        if m.NickName != None:
+            displayName += ' (' + m.NickName + ')'
+        displayName += ' ' + m.First_Name
+    
+        classItem = {
+            'name': displayName,
+            'memberID':m.Member_ID
+        }
+        classDict.append(classItem)
+
+    # DISPLAY OR MAKE PDF
+    if (destination == 'PDF'):
+        html = render_template("rptTrainingClass.html",classDict=classDict,displayTrainingDate=displayTrainingDate,todaysDate=todaysDate)
+        # DEFINE PATH TO USE TO STORE PDF
+        currentWorkingDirectory = os.getcwd()
+        pdfDirectoryPath = currentWorkingDirectory + "/app/static/pdf"
+        filePath = pdfDirectoryPath + "/rptTrainingClass.pdf"
+        options = { 
+            "enable-local-file-access": None
+        }
+        pdfkit.from_string(html,filePath, options=options)
+        return redirect(url_for('index'))
+    else:
+        return render_template("rptTrainingClass.html",members=members,classDict=classDict,displayTrainingDate=displayTrainingDate,todaysDate=todaysDate)
+
 
 @app.route("/eMailCoordinator", methods=["GET","POST"])
 def eMailCoordinator():
@@ -740,7 +913,7 @@ def eMailCoordinatorAndMonitors():
     endDateDAT = beginDateDAT + timedelta(days=6)
     endDateSTR = endDateDAT.strftime('%m-%d-%Y')
 
-    # RETURN COORDINBATOR AND MONITORS NAMES AND EMAIL ADDRESSES; COORDINATORS PHONE
+    # RETURN COORDINATOR AND MONITORS NAMES AND EMAIL ADDRESSES; COORDINATORS PHONE
     # BUILD SELECT STATEMENT TO RETRIEVE SM MEMBERS SCHEDULE FOR CURRENT YEAR FORWARD
     sqlMonitors = "SELECT tblMember_Data.Member_ID as memberID, "
     sqlMonitors += "First_Name + ' ' + Last_Name as displayName, eMail "

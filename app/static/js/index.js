@@ -169,6 +169,24 @@ $('#printMonitorSubListID').click(function(){
     window.location.href = '/printSubList?date=' + curWeekDate + '&shop=' + curShopNumber + '&destination=PRINT' 
 })
 
+$('#printTrainingNeededID').click(function(){
+    curWeekDate = document.getElementById('weekSelected').value
+    if (curWeekDate == ''){
+        alert("Please select a date.")
+        return 
+    }
+    window.location.href = '/printMonitorsNeedingTraining?date=' + curWeekDate + '&shop=' + curShopNumber + '&destination=PRINT' 
+})
+
+$('#printTrainingClassID').click(function(){
+    curWeekDate = document.getElementById('weekSelected').value
+    if (curWeekDate == ''){
+        alert("Please select a date.")
+        return 
+    }
+    window.location.href = '/printTrainingClass?date=' + curWeekDate + '&shop=' + curShopNumber + '&destination=PRINT' 
+})
+
 
 $('#printMonitorSchedule2').click(function(){
     alert('begin printMonitorSchedule function ...')
@@ -192,6 +210,15 @@ $('#printMonitorSchedule2').click(function(){
     });    
 })
 
+// function MonitorsNeedingTraining() {
+//     alert('printMonitorsNeedingTraining')
+//     curWeekDate = document.getElementById('weekSelected').value
+//     if (curWeekDate == ''){
+//         alert("Please select a date.")
+//         return 
+//     }
+//     window.location.href = '/printMonitorsNeedingTraining?date=' + curWeekDate + '&shop=' + curShopNumber + '&destination=PRINT' 
+// }
 
 // THE FOLLOWING ROUTINE RETRIEVES THE MESSAGE THAT IS TO BE INSERTED INTO A 'COORDINATORS ONLY' EMAIL
 $('#coordinatorOnlyID').click(function(){

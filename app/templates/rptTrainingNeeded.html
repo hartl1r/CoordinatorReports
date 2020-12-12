@@ -1,0 +1,60 @@
+{% extends 'base.html' %}
+
+{% block styles %}
+    {{super()}}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/rptTrainingNeeded.css') }}">
+{% endblock %}
+
+{% block content %} 
+<div class='wholePage'>
+    <div class="reportHdg">
+        <div class=reportHdgLine1>
+            <div class=reportHdgLine1Title>
+                <h1 class="text-center">THE VILLAGES WOODWORKERS CLUB</h1>
+            </div>
+            <div class=reportHdgLine1Buttons>
+                <button id="printPageButton"  onClick="window.print();">PRINT</button>
+                <button id="closePageButton"  onclick="window.history.back()" >CLOSE PAGE</button>
+            </div>
+        </div>
+        <div class=reportHdgLine2>
+            <h2 class="text-center">MONITORS NEEDING TRAINING</h2>
+        </div>
+        <div class="location">
+            <h3>Location: {{locationName}}</h3>
+        </div>
+        <div class="coordinator">
+            <h3>Coordinator: {{coordName}}</h3>
+        </div>
+        <div class="week">
+            <h3>Week of: {{weekOfHdg}}</h3>
+        </div>
+        <div class=reportHdgLine3>
+            <h3 class="text-center">As of {{todaysDate}}</h3>
+        </div>   
+    </div>  
+    <br>
+    <div class="row colHdg">
+        <div class="col-3" style=text-align:left>Name</div>
+        <div class="col-1" style=text-align:center>ID</div>
+        <div class="col-2">Home Phone</div>
+        <div class="col-2">Cell Phone</div>
+        <div class="col-2">Scheduled</div>
+        <div class="col-2">Last Training</div>
+    </div>
+    <hr>
+
+    <div class="detailSection">  
+        {% for toTrainItem in toTrainDict %} 
+        <div class ="row">
+            <div class="col-3">{{toTrainItem.name}}</div>
+            <div class="col-1" style=text-align:center>{{toTrainItem.memberID}}</div>
+            <div class="col-2">{{toTrainItem.homePhone}}</div>
+            <div class="col-2">{{toTrainItem.cellPhone}}</div>
+            <div class="col-2">{{toTrainItem.dateScheduled}}</div>
+            <div class="col-2">{{toTrainItem.lastTraining}}</div>
+        </div>                 
+        {% endfor %} 
+    </div>
+</div>
+{% endblock %}

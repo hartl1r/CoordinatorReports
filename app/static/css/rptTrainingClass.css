@@ -27,7 +27,7 @@
 	}
 
    	table {
-		width:80%;
+		width:30%;
 		margin:0 auto;
 	}
 	table caption {
@@ -43,7 +43,7 @@
 	
 	th, td {
 		border: 1px solid black;
-		text-align:left;  
+		text-align:center;  
 	}
 	td {
 		font: size 10pt;
@@ -62,7 +62,7 @@
 	}
 	
 	table {
-		width:100%;
+		width:40%;
 		margin: 0 auto;
 	} 
 
