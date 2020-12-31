@@ -161,12 +161,13 @@ $('#printMonitorContactsID').click(function(){
 })
 
 $('#printMonitorSubListID').click(function(){
-    curWeekDate = document.getElementById('weekSelected').value
-    if (curWeekDate == ''){
-        alert("Please select a date.")
-        return 
-    }
-    window.location.href = '/printSubList?date=' + curWeekDate + '&shop=' + curShopNumber + '&destination=PRINT' 
+    // curWeekDate = document.getElementById('weekSelected').value
+    // if (curWeekDate == ''){
+    //     alert("Please select a date.")
+    //     return 
+    // }
+    window.location.href = '/printSubList'
+    //?date=' + curWeekDate + '&shop=' + curShopNumber + '&destination=PRINT' 
 })
 
 $('#printTrainingNeededID').click(function(){
@@ -673,18 +674,22 @@ function hideEmailForm() {
 
 function showPrintReports() {
     console.log('showing print reports section')
-    document.getElementById('printReportBtns').style.opacity=1;
+    //document.getElementById('printReportBtns').style.opacity=1;
     document.getElementById('printMonitorScheduleID').style.opacity=1;
     document.getElementById('printMonitorNotesID').style.opacity=1;
     document.getElementById('printMonitorContactsID').style.opacity=1;
-    document.getElementById('printMonitorSubListID').style.opacity=1;
+    document.getElementById('printTrainingNeededID').style.opacity=1;
+    document.getElementById('printTrainingClassID').style.opacity=1;
+    //document.getElementById('printMonitorSubListID').style.opacity=1;
 }
 function hidePrintReports() {
-    document.getElementById('printReportBtns').style.opacity=.2;
+    //document.getElementById('printReportBtns').style.opacity=.2;
     document.getElementById('printMonitorScheduleID').style.opacity=.2;
     document.getElementById('printMonitorNotesID').style.opacity=.2;
     document.getElementById('printMonitorContactsID').style.opacity=.2;
-    document.getElementById('printMonitorSubListID').style.opacity=.2;
+    document.getElementById('printTrainingNeededID').style.opacity=.2;
+    document.getElementById('printTrainingClassID').style.opacity=.2;
+    //document.getElementById('printMonitorSubListID').style.opacity=.2;
 }
 function showAttachmentChoices() {
     document.getElementById('attachmentCheckboxes').style.opacity=1;

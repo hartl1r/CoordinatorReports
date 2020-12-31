@@ -516,7 +516,7 @@ def printWeeklyMonitorNotes():
 def printSubList():
     destination = request.args.get('destination')
     todays_date = date.today()
-    todays_dateSTR = todays_date.strftime('%-m-%-d-%Y')
+    todays_dateSTR = todays_date.strftime('%B %d, %Y')
     thisYear = todays_date.strftime('%Y')
     janFirstSTR = thisYear + '0101'
     janFirst = datetime.strptime(janFirstSTR,'%Y%m%d')
@@ -583,6 +583,7 @@ def printSubList():
             certifiedDateRA = ' '
         else:
             certifiedDateRA = s.Certification_Training_Date.strftime('%m/%d/%Y')
+        
         if s.Certification_Training_Date_2 == None:
             certifiedDateBW = ' '
         else:
@@ -672,9 +673,9 @@ def printSubList():
             'reasonRestricted':reasonRestricted,
             'toolCribRequested':toolCribRequested,
             'certifiedRA':s.Certified,
-            'dateCertifiedRA':certifiedDateRA,
+            'certifiedDateRA':certifiedDateRA,
             'certifiedBW':s.Certified_2,
-            'dateCertifiedBW':certifiedDateBW,
+            'certifiedDateBW':certifiedDateBW,
             'completedShifts':completedShifts,
             'futureShifts':futureShifts,
             'monitorDutyNotes':monitorDutyNotes,
