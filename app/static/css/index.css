@@ -28,7 +28,6 @@
     grid-template-columns: 1fr 1fr;
     grid-template-areas: "titleArea     versionArea";
     padding-top: 10px;
-    text-align: center;
     background-color:navy;
     color: var(--main-txt-color);
     border-bottom:white 3px;

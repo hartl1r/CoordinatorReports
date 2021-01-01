@@ -71,6 +71,9 @@ document.getElementById("coordChoice").addEventListener("change", coordinatorCha
 document.getElementById("selectpicker").addEventListener("change",memberSelectedRtn)
 // document.getElementById("sendEmail").addEventListener("click",showEmailSections)
 document.getElementById("eMailReportBtn").addEventListener("click",function(){prepareAttachments();},false);
+document.getElementById("trainingDateSelected").addEventListener("click",showTrainingClassReportBtn)
+
+
 
 // GET STAFFID THAT WAS STORED BY THE LOGIN ROUTINE
 if (!localStorage.getItem('staffID')) {
@@ -109,8 +112,6 @@ if (sessionStorage.getItem('weekSelected')) {
     document.getElementById('coordChoice').selectedIndex=sessionStorage.getItem('coordIndex')
     document.getElementById('weekSelected').selectedIndex = sessionStorage.getItem('weekIndex')
     
-    //curCoordinatorID = document.getElementById('coordChoice').value
-   
     buildCoordinatorLine()
      
 }
@@ -118,6 +119,7 @@ else {
     // INITIAL PAGE LOAD SETTINGS
     document.getElementById('coordChoice').selectedIndex=0
     document.getElementById('weekSelected').selectedIndex=0
+    document.getElementById('trainingDateSelected').selectedIndex=0
     hidePrintReports()
     hideAttachmentChoices()
     hideEmailForm()
@@ -161,13 +163,7 @@ $('#printMonitorContactsID').click(function(){
 })
 
 $('#printMonitorSubListID').click(function(){
-    // curWeekDate = document.getElementById('weekSelected').value
-    // if (curWeekDate == ''){
-    //     alert("Please select a date.")
-    //     return 
-    // }
     window.location.href = '/printSubList'
-    //?date=' + curWeekDate + '&shop=' + curShopNumber + '&destination=PRINT' 
 })
 
 $('#printTrainingNeededID').click(function(){
@@ -178,16 +174,6 @@ $('#printTrainingNeededID').click(function(){
     }
     window.location.href = '/printMonitorsNeedingTraining?date=' + curWeekDate + '&shop=' + curShopNumber + '&destination=PRINT' 
 })
-
-$('#printTrainingClassID').click(function(){
-    curWeekDate = document.getElementById('weekSelected').value
-    if (curWeekDate == ''){
-        alert("Please select a date.")
-        return 
-    }
-    window.location.href = '/printTrainingClass?date=' + curWeekDate + '&shop=' + curShopNumber + '&destination=PRINT' 
-})
-
 
 $('#printMonitorSchedule2').click(function(){
     alert('begin printMonitorSchedule function ...')
@@ -210,16 +196,6 @@ $('#printMonitorSchedule2').click(function(){
         }
     });    
 })
-
-// function MonitorsNeedingTraining() {
-//     alert('printMonitorsNeedingTraining')
-//     curWeekDate = document.getElementById('weekSelected').value
-//     if (curWeekDate == ''){
-//         alert("Please select a date.")
-//         return 
-//     }
-//     window.location.href = '/printMonitorsNeedingTraining?date=' + curWeekDate + '&shop=' + curShopNumber + '&destination=PRINT' 
-// }
 
 // THE FOLLOWING ROUTINE RETRIEVES THE MESSAGE THAT IS TO BE INSERTED INTO A 'COORDINATORS ONLY' EMAIL
 $('#coordinatorOnlyID').click(function(){
@@ -312,6 +288,7 @@ $('#coordinatorAndMonitorsID').click(function(){
             message += "Please remember to contact your coordinator, " + curCoordinatorName + ", if you make any changes or have questions.\n"
             message += "My phone number is " + curCoordinatorPhone + " and my Email is " + curCoordinatorEmail + "."
             message += '\n' + data.eMailMsg + '\n'
+            
             // COPY 'MESSAGE' TO FORM
             document.getElementById('eMailMsgID').value=message 
 
@@ -440,7 +417,6 @@ function setShopFilter(shopLocation) {
     } 
 }
 
-
 function formatDate(date) {
     var d = new Date(date),
         month = '' + (d.getMonth() + 1),
@@ -473,7 +449,6 @@ function filterTheWeeksShown() {
 }
   
 function weekChanged () {
-    console.log('... begin weekChanged routine ')
     // DID THE USER CLICK ON 'Select a date ... '?
     if (this.selectedIndex == 0) {
         return
@@ -519,54 +494,6 @@ function weekChanged () {
 
             // BUILD MESSAGE FOR coordinatorInfoID
             buildCoordinatorLine()
-            // if (curCoordinatorID != '') {
-            //     document.getElementById('coordHdgBeforeDate').innerHTML = "The coordinator for the week of " 
-            //     document.getElementById('coordHdgDate').innerHTML = curWeekDisplayDate 
-            //     document.getElementById('coordHdgBeforeName').innerHTML = ' is ' 
-            //     document.getElementById('coordHdgName').innerHTML = curCoordinatorName 
-            //     document.getElementById('coordHdgBeforePhone').innerHTML = ' and may be contacted at '
-            //     document.getElementById('coordHdgPhone').innerHTML = curCoordinatorPhone 
-            //     document.getElementById('coordHdgBeforeEmail').innerHTML = ' or by email at '
-            //     document.getElementById('coordHdgEmailLink').href = 'mailto:' + curCoordinatorEmail
-            //     document.getElementById('coordHdgEmailLink').innerHTML = curCoordinatorEmail
-            // }
-            // else {
-            //     document.getElementById('coordHdgBeforeDate').innerHTML = "A coordinator has not been assigned for this week."
-            //     document.getElementById('coordHdgDate').innerHTML = ''
-            //     document.getElementById('coordHdgBeforeName').innerHTML = '' 
-            //     document.getElementById('coordHdgName').innerHTML = ''
-            //     document.getElementById('coordHdgBeforePhone').innerHTML = ''
-            //     document.getElementById('coordHdgPhone').innerHTML = ''
-            //     document.getElementById('coordHdgBeforeEmail').innerHTML = ''
-            //     document.getElementById('coordHdgEmailLink').href = '#'
-            //     document.getElementById('coordHdgEmailLink').innerHTML = ''
-            // }
-            //console.log('curShopNumber - ' + curShopNumber)
-
-            // SET UP LINKS FOR PRINT SCHEDULE BUTTON
-            // prtSchedule = document.getElementById("printMonitorScheduleID")
-            // address = "/printWeeklyMonitorSchedule?date="+ curWeekDate + "&shop=" + curShopNumber + "&destination=" + 'PRINT'
-            // lnk = "window.location.href='" + address +"'"
-            // prtSchedule.setAttribute("onclick",lnk)
-
-            // SET UP LINKS FOR PRINT NOTES BUTTON
-            // prtNotes = document.getElementById("printMonitorNotesID")
-            // address = "/printWeeklyMonitorNotes?date="+ curWeekDate + "&shop=" + curShopNumber + "&destination=" + 'PRINT'
-            // lnk = "window.location.href='" + address +"'"
-            // prtNotes.setAttribute("onclick",lnk)
-
-            // SET UP LINKS FOR PRINT CONTACTS BUTTON
-            // prtContacts = document.getElementById("printMonitorContactsID")
-            // address = "/printWeeklyMonitorContacts?date="+ curWeekDate + "&shop=" + curShopNumber + "&destination=" + 'PRINT'
-            // lnk = "window.location.href='" + address +"'"
-            // prtContacts.setAttribute("onclick",lnk)
-
-            // SET UP LINKS FOR PRINT SUB LIST BUTTON
-            // prtSubList = document.getElementById("printMonitorSubListID")
-            // address = "/printSubList?date="+ curWeekDate + "&shop=" + curShopNumber + "&destination=" + 'PRINT'
-            // lnk = "window.location.href='" + address +"'"
-            // prtSubList.setAttribute("onclick",lnk)
-
             
             showPrintReports()
         },
@@ -657,8 +584,7 @@ function weekChanged () {
                 alert('ERROR from eMailCoordinator\ntextStatus - '+textStatus+'\nerrorThrown - '+errorThrown)
             }
         });
-    }
-    
+    }    
 
 function showEmailForm() {
     document.getElementById('emailBody').style.opacity=1;
@@ -673,23 +599,17 @@ function hideEmailForm() {
 }
 
 function showPrintReports() {
-    console.log('showing print reports section')
-    //document.getElementById('printReportBtns').style.opacity=1;
     document.getElementById('printMonitorScheduleID').style.opacity=1;
     document.getElementById('printMonitorNotesID').style.opacity=1;
     document.getElementById('printMonitorContactsID').style.opacity=1;
     document.getElementById('printTrainingNeededID').style.opacity=1;
-    document.getElementById('printTrainingClassID').style.opacity=1;
-    //document.getElementById('printMonitorSubListID').style.opacity=1;
 }
 function hidePrintReports() {
-    //document.getElementById('printReportBtns').style.opacity=.2;
     document.getElementById('printMonitorScheduleID').style.opacity=.2;
     document.getElementById('printMonitorNotesID').style.opacity=.2;
     document.getElementById('printMonitorContactsID').style.opacity=.2;
     document.getElementById('printTrainingNeededID').style.opacity=.2;
     document.getElementById('printTrainingClassID').style.opacity=.2;
-    //document.getElementById('printMonitorSubListID').style.opacity=.2;
 }
 function showAttachmentChoices() {
     document.getElementById('attachmentCheckboxes').style.opacity=1;
@@ -726,4 +646,19 @@ function buildCoordinatorLine() {
     }
     
 }
+
+function showTrainingClassReportBtn() {
+    document.getElementById('printTrainingClassID').style.opacity=1;
+}
+
+$('#printTrainingClassID').click(function(){
+    classDate = document.getElementById('trainingDateSelected').value
+    if (classDate == ''){
+        alert("Please select a date.")
+        return 
+    }
+    link = '/printTrainingClass?date=' + classDate + '&destination=PRINT' 
+    window.location.href = link
+})
+
 // END OF FUNCTIONS

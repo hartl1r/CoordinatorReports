@@ -55,7 +55,17 @@ def index():
     sqlMembers += "ORDER BY Last_Name, First_Name "
     nameList = db.engine.execute(sqlMembers)
     
-    return render_template("index.html",coordNames=coordNames,weeks=weeks,nameList=nameList)  #,eMails=eMails)
+    # RECENT TRAINING DATES, 30 DAYS OR LESS
+    firstTrainingDate = firstWeek.strftime('%m-%d-%Y')
+    sqlTrainingDates = "SELECT Last_Monitor_Training, format(Last_Monitor_Training,'MMM d, yyyy') AS displayDate "
+    sqlTrainingDates += "FROM tblMember_Data "
+    sqlTrainingDates += "WHERE Last_Monitor_Training >= '" + firstTrainingDate  + "' "
+    sqlTrainingDates += "GROUP BY Last_Monitor_Training "
+    sqlTrainingDates += "ORDER BY Last_Monitor_Training"
+    
+    trainingDates = db.engine.execute(sqlTrainingDates)
+
+    return render_template("index.html",coordNames=coordNames,weeks=weeks,nameList=nameList,trainingDates=trainingDates)  #,eMails=eMails)
    
 
 
@@ -835,18 +845,22 @@ def printMonitorsNeedingTraining():
 @app.route("/printTrainingClass", methods=['GET'])
 def printTrainingClass():
     trainingDate=request.args.get('date')
-    print('trainingDate - ',trainingDate)
+    if trainingDate == None:
+        flash('The training date is missing','danger')
+        return
+
     shopNumber=request.args.get('shop')
     destination = request.args.get('destination')
     trainingDateDAT = datetime.strptime(trainingDate,'%Y-%m-%d')
-    displayTrainingDate = trainingDateDAT.strftime('%B %d, %Y') 
+    displayTrainingDate = trainingDateDAT.strftime('%B %-d, %Y') 
     
     # GET TODAYS DATE
     todays_date = date.today()
-    todaysDate = todays_date.strftime('%-m-%-d-%Y')
+    todaysDate = todays_date.strftime('%B %-d, %Y')
 
     # GET MEMBERS IN TRAINING CLASS
-    members = db.session.query(Member).filter(Member.Last_Monitor_Training == trainingDate).all()
+    members = db.session.query(Member).filter(Member.Last_Monitor_Training == trainingDate)\
+    .order_by(Member.Last_Name,Member.First_Name).all()
     
     if members == None:
         flash ('No members assigned to this date.','info')
@@ -854,7 +868,7 @@ def printTrainingClass():
 
     classDict = []
     classItem = []
-    print('before for loop')
+    
     for m in members:
         displayName = m.Last_Name
         if m.Last_Monitor_Training != None:

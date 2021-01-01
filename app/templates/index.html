@@ -11,7 +11,7 @@
                 <h2>MONITOR COORDINATOR REPORTS</h2>
             </div>
             <div class="version">
-                <h4 class="version">ver. Dec 31, 2020</h4>
+                <h4 class="version">ver. Jan 1, 2021</h4>
             </div>  
         </div>
 
@@ -57,8 +57,16 @@
                 <li><button id='printMonitorNotesID' type="button" class='btn btn-sm btn-primary'>Print Notes</button></li>
                 <li><button id='printMonitorContactsID' type="button" class='btn btn-sm btn-primary'>Print Contacts</button></li>
                 <li><button id='printMonitorSubListID' type="button" class='btn btn-sm btn-primary'>Print Sub List</button></li>
-                <li><button id='printTrainingNeededID' type="button" class='btn btn-sm btn-secondary'>Training Needed</button></li>
-                <li><button id='printTrainingClassID' type="button" class='btn btn-sm btn-secondary'>Training Class List</button></li>
+                <li><button id='printTrainingNeededID' type="button" class='btn btn-sm btn-primary'>Training Needed</button></li>
+                <li>
+                    <select id='trainingDateSelected' style='margin-bottom:0px' title='Select a date ...' data-live-search=true data-live-search-style="contains" data-width='auto'>
+                        <option class="optTrainingDates" value="">Select a class ...</option>
+                        {% for t in trainingDates %}
+                            <option  class="optTrainingDate" value={{t.Last_Monitor_Training}}>{{t.displayDate}}</option>
+                        {% endfor %}
+                    </select>
+                </li>
+                <li><button id='printTrainingClassID' type="button" class='btn btn-sm btn-primary' onclick="printTrainingClass()">Training Class List</button></li>
             </ul>
         </div>
         
