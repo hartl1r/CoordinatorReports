@@ -1021,6 +1021,8 @@ def getCoordinatorData():
 
 @app.route("/sendEmail", methods=["GET","POST"])
 def sendEmail():
+    print('begin sendEmail endpoint')
+
     # DETERMINE PATH TO PDF FILES
     currentWorkingDirectory = os.getcwd()
     pdfDirectoryPath = currentWorkingDirectory + "/app/static/pdf"
@@ -1073,6 +1075,7 @@ def sendEmail():
 
     
     # SEND THE EMAIL
+    print('before - mail.send(msg) ...')
     mail.send(msg)
     RemovePDFfiles(pdfDirectoryPath)
     #flash ('Message sent.','SUCCESS')
