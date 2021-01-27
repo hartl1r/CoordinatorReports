@@ -34,10 +34,12 @@
 }
 .title {
     grid-area:titleArea;
+    padding-left:1em;
 }
 .version {
     grid-area:versionArea;
-    align-items: right;
+    text-align: right;
+    padding-right:1em;
 }
 
 #location {

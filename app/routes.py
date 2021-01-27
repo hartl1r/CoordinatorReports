@@ -173,7 +173,14 @@ def printWeeklyMonitorSchedule():
     sqlTCPM += "AND tblMonitor_Schedule.Date_Scheduled <= '" + endDateSTR + "' "
     sqlTCPM += "GROUP BY tblMonitor_Schedule.Date_Scheduled ORDER BY Count(tblMonitor_Schedule.Member_ID) DESC"
     TCPMrows = db.engine.execute(sqlTCPM).scalar()
-    
+    if SMAMrows == None:
+        SMAMrows = 0
+    if SMPMrows == None:
+        SMPMrows = 0
+    if TCAMrows == None:
+        TCAMrows = 0
+    if TCPMrows == None:
+        TCPMrows = 0
 
     # DEFINE ARRAYS FOR EACH GROUPING
     rows = SMAMrows 
@@ -210,7 +217,7 @@ def printWeeklyMonitorSchedule():
     sqlSelectSM += "WHERE Date_Scheduled between '" + beginDateSTR + "' and '" + endDateSTR + "' "
     sqlSelectSM += "ORDER BY dayOfWeek, AM_PM,Last_Name"
     SMschedule = db.engine.execute(sqlSelectSM)
-    
+
     # BUILD SELECT STATEMENT TO RETRIEVE TC MEMBERS SCHEDULE FOR CURRENT YEAR FORWARD
     sqlSelectTC = "SELECT tblMember_Data.Member_ID as memberID, "
     sqlSelectTC += "First_Name + ' ' + Last_Name as displayName, tblShop_Names.Shop_Name, "
@@ -227,56 +234,57 @@ def printWeeklyMonitorSchedule():
     TCschedule = db.engine.execute(sqlSelectTC)
 
     #   BUILD SHOP MONITOR ARRAYS
-    for s in SMschedule:
-        
-        # IS TRAINING NEEDED?
-        if (s.waiver == None):
-            if (s.trainingYear == None):
-                trainingNeeded = 'Y'
-            else:
-                intTrainingYear = int(s.trainingYear) +2
-                intScheduleYear = int(s.scheduleYear)
-                if (intTrainingYear <= intScheduleYear):
+    # ARE THERE ANY MEMBERS SCHEDULED?
+    if SMschedule:
+        for s in SMschedule:
+            
+            # IS TRAINING NEEDED?
+            if (s.waiver == None):
+                if (s.trainingYear == None):
                     trainingNeeded = 'Y'
                 else:
-                    trainingNeeded = 'N'
-        else:
-            trainingNeeded = 'N'
+                    intTrainingYear = int(s.trainingYear) +2
+                    intScheduleYear = int(s.scheduleYear)
+                    if (intTrainingYear <= intScheduleYear):
+                        trainingNeeded = 'Y'
+                    else:
+                        trainingNeeded = 'N'
+            else:
+                trainingNeeded = 'N'
 
-    
-
-        # Group - Shop Monitor;  shift - AM
-        if (s.Duty == 'Shop Monitor' and s.AM_PM == 'AM'):
-            for r in range(SMAMrows):
-                if (SMAMnames[r][s.dayOfWeek] == 0):
-                    SMAMnames[r][s.dayOfWeek] = s.displayName
-                    SMAMtraining[r][s.dayOfWeek] = trainingNeeded
-                    break
         
-        # Group - Shop Monitor;  shift - PM
-        if (s.Duty == 'Shop Monitor' and s.AM_PM == 'PM'): 
-            for r in range(SMPMrows):
-                if (SMPMnames[r][s.dayOfWeek] == 0):
-                    SMPMnames[r][s.dayOfWeek] = s.displayName
-                    SMPMtraining[r][s.dayOfWeek] = trainingNeeded
-                    break
 
-        # Group - Tool Crib;  shift - AM
-        if (s.Duty == 'Tool Crib' and s.AM_PM == 'AM'):
-            for r in range(TCAMrows):
-                if (TCAMnames[r][s.dayOfWeek] == 0):
-                    TCAMnames[r][s.dayOfWeek] = s.displayName
-                    TCAMtraining[r][s.dayOfWeek] = trainingNeeded
-                    break
+            # Group - Shop Monitor;  shift - AM
+            if (s.Duty == 'Shop Monitor' and s.AM_PM == 'AM'):
+                for r in range(SMAMrows):
+                    if (SMAMnames[r][s.dayOfWeek] == 0):
+                        SMAMnames[r][s.dayOfWeek] = s.displayName
+                        SMAMtraining[r][s.dayOfWeek] = trainingNeeded
+                        break
+            
+            # Group - Shop Monitor;  shift - PM
+            if (s.Duty == 'Shop Monitor' and s.AM_PM == 'PM'): 
+                for r in range(SMPMrows):
+                    if (SMPMnames[r][s.dayOfWeek] == 0):
+                        SMPMnames[r][s.dayOfWeek] = s.displayName
+                        SMPMtraining[r][s.dayOfWeek] = trainingNeeded
+                        break
 
-        # Group - Tool Crib;  shift - PM
-        if (s.Duty == 'Tool Crib' and s.AM_PM == 'PM'):
-            for r in range(TCPMrows):
-                if (TCPMnames[r][s.dayOfWeek] == 0):
-                    TCPMnames[r][s.dayOfWeek] = s.displayName
-                    TCPMtraining[r][s.dayOfWeek] = trainingNeeded
-                    break
+            # Group - Tool Crib;  shift - AM
+            if (s.Duty == 'Tool Crib' and s.AM_PM == 'AM'):
+                for r in range(TCAMrows):
+                    if (TCAMnames[r][s.dayOfWeek] == 0):
+                        TCAMnames[r][s.dayOfWeek] = s.displayName
+                        TCAMtraining[r][s.dayOfWeek] = trainingNeeded
+                        break
 
+            # Group - Tool Crib;  shift - PM
+            if (s.Duty == 'Tool Crib' and s.AM_PM == 'PM'):
+                for r in range(TCPMrows):
+                    if (TCPMnames[r][s.dayOfWeek] == 0):
+                        TCPMnames[r][s.dayOfWeek] = s.displayName
+                        TCPMtraining[r][s.dayOfWeek] = trainingNeeded
+                        break
 
     # REPLACE 0 WITH BLANK IN NAMES ARRAY
     for r in range(SMAMrows):
@@ -903,7 +911,7 @@ def printTrainingClass():
 
 @app.route("/eMailCoordinator", methods=["GET","POST"])
 def eMailCoordinator():
-    print('... begin /eMailCoordinator')
+
     # THIS ROUTINE ONLY RETURNS THE EMAIL MESSAGE TO BE USED FOR COORDINATORS ONLY EMAILS
     # ___________________________________________________________________________________
 
@@ -963,10 +971,10 @@ def eMailCoordinatorAndMonitors():
 @app.route("/getMembersEmailAddress", methods=["GET","POST"])
 def getMembersEmailAddress():
     memberID=request.args.get('memberID')
-    weekOf = request.args.get('weekOf')
-    shopNumber = request.args.get('shopNumber')
-    weekOfDat = datetime.strptime(weekOf,'%Y-%m-%d')
-    displayDate = weekOfDat.strftime('%B %d, %Y')  #'%m/%d/%Y')
+    # weekOf = request.args.get('weekOf')
+    # shopNumber = request.args.get('shopNumber')
+    # weekOfDat = datetime.strptime(weekOf,'%Y-%m-%d')
+    # displayDate = weekOfDat.strftime('%B %d, %Y')  #'%m/%d/%Y')
 
     # GET MEMBER'S EMAIL ADDRESS;
     eMail=db.session.query(Member.eMail).filter(Member.Member_ID == memberID).scalar()
@@ -974,7 +982,7 @@ def getMembersEmailAddress():
     # LOOK UP EMAIL MESSAGE FOR MEMBER
     eMailMsg=db.session.query(EmailMessages.eMailMessage).filter(EmailMessages.eMailMsgName == 'Email To Members').scalar()
     
-    return jsonify(eMail=eMail,eMailMsg=eMailMsg,curWeekDisplayDate=displayDate)
+    return jsonify(eMail=eMail,eMailMsg=eMailMsg,curWeekDisplayDate='')
 
 
 # THE FOLLOWING ROUTINE IS CALLED WHEN THE USER SELECTS A WEEK
@@ -1021,7 +1029,6 @@ def getCoordinatorData():
 
 @app.route("/sendEmail", methods=["GET","POST"])
 def sendEmail():
-    print('begin sendEmail endpoint')
 
     # DETERMINE PATH TO PDF FILES
     currentWorkingDirectory = os.getcwd()
@@ -1075,7 +1082,6 @@ def sendEmail():
 
     
     # SEND THE EMAIL
-    print('before - mail.send(msg) ...')
     mail.send(msg)
     RemovePDFfiles(pdfDirectoryPath)
     #flash ('Message sent.','SUCCESS')

@@ -55,7 +55,7 @@ if (!sessionStorage.getItem('processingEmail') ){
     sessionStorage.setItem('processingEmail','FALSE')
 }
 if (sessionStorage.getItem('processingEmail') == 'FALSE') {
-    hideEmailForm()
+    // hideEmailForm()
 }
 else {
     showEmailForm()
@@ -69,6 +69,7 @@ document.getElementById("weekSelected").addEventListener("click", weekChanged);
 document.getElementById("shopChoice").addEventListener("change", shopChanged);
 document.getElementById("coordChoice").addEventListener("change", coordinatorChanged);
 document.getElementById("selectpicker").addEventListener("change",memberSelectedRtn)
+
 // document.getElementById("sendEmail").addEventListener("click",showEmailSections)
 document.getElementById("eMailReportBtn").addEventListener("click",function(){prepareAttachments();},false);
 document.getElementById("trainingDateSelected").addEventListener("click",showTrainingClassReportBtn)
@@ -122,7 +123,7 @@ else {
     document.getElementById('trainingDateSelected').selectedIndex=0
     hidePrintReports()
     hideAttachmentChoices()
-    hideEmailForm()
+    // hideEmailForm()
 }
 
 // SET DROP DOWN MENU INITIAL VALUES
@@ -363,7 +364,6 @@ function prepareAttachments(destination) {
     
     // CREATE MONITOR SCHEDULE REPORT PDF
     if (document.getElementById('scheduleID').checked) {
-        console.log('schedule checked')
         window.location.href = '/printWeeklyMonitorSchedule?date=' + curWeekDate + '&shop=' + curShopNumber + '&destination=PDF' 
     }
     // CREATE MONITOR NOTES PDF
@@ -461,7 +461,7 @@ function weekChanged () {
 
     // HIDE EMAIL FORM
     sessionStorage.setItem('processingEmail','FALSE')
-    hideEmailForm()
+    // hideEmailForm()
     showPrintReports()
     showAttachmentChoices()
 
@@ -477,7 +477,6 @@ function weekChanged () {
             shopNumber: curShopNumber},
         success: function(data, textStatus, jqXHR)
         {
-            console.log('... return from getCoordinatorData ')
             curCoordinatorID = data.coordID 
             curCoordinatorName = data.coordName
             curCoordinatorEmail = data.coordEmail
@@ -512,10 +511,6 @@ function weekChanged () {
     }
 
     function memberSelectedRtn() {
-        if (curWeekDate == ''){
-            alert("Please select a date.")
-            return 
-        } 
         selectedMember = this.value
         lastEight = selectedMember.slice(-8)
         curMemberID= lastEight.slice(1,7)
@@ -620,7 +615,6 @@ function hideAttachmentChoices() {
 
 function buildCoordinatorLine() {
     // BUILD MESSAGE FOR coordinatorInfoID
-    console.log('curCoordinatorID at buildCoordinatorLine - '+ curCoordinatorID)
     if (curCoordinatorID != '') {
 
         document.getElementById('coordHdgBeforeDate').innerHTML = "The coordinator for the week of " 
