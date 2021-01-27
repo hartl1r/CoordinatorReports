@@ -1039,8 +1039,9 @@ def sendEmail():
     recipient = request.args.get('recipient')
     bcc=("Woodshop","villagesWoodShop@embarqmail.com")
     #cc=("Richard l. Hartley","hartl1r@gmail.com")
+    cc = request.args.get('coordinatorsEmail')
     # FOR TESTING PURPOSES ..............................
-    recipient = ("Richard Hartley", "hartl1r@gmail.com")
+    #recipient = ("Richard Hartley", "hartl1r@gmail.com")
 
     recipientList = []
     recipientList.append(recipient)

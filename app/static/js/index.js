@@ -264,9 +264,12 @@ $('#coordinatorAndMonitorsID').click(function(){
             // COPY LIST OF MONITORS TO GLOBAL VARIABLE
             curMonitorsEmailAddresses = data.monitorDict
 
-            // INSERT COORDINATOR'S EMAIL INTO 'TO' LINE
-            document.getElementById('eMailRecipientID').value = curCoordinatorEmail
-            
+            // INSERT COORDINATOR'S EMAIL INTO 'TO' LINE; THEN INSERT MONITOR'S EMAIL ADDRESSES
+            recipients = document.getElementById('eMailRecipientID')
+            recipients.value = curCoordinatorEmail + ';'
+            for (i=0; i < curMonitorsEmailAddresses.length; i++) {
+                recipients.value += curMonitorsEmailAddresses[i]['eMail'] + ';'
+            }
 
             // BUILD SUBJECT LINE
             subject = "Monitor Duty for Week Of " + curWeekDisplayDate + " at " + curShopName
@@ -565,7 +568,8 @@ function weekChanged () {
             data : {
                 recipient:document.getElementById('eMailRecipientID').value,
                 subject:document.getElementById('eMailSubjectID').value,
-                message:document.getElementById('eMailMsgID').value
+                message:document.getElementById('eMailMsgID').value,
+                coordinatorsEmail:document.getElementById('coordHdgEmailLink').innerHTML
             },
             success: function(data, textStatus, jqXHR)
             {
