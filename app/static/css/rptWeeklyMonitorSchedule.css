@@ -65,6 +65,13 @@
 		border:1px solid black;
 		margin: 0 auto;
 	} 
+	
+	.shiftCol {
+		width: 50px;
+	}
+	.dayCol { 
+		width: 240px;
+	}
 } 
 
 @media print {
@@ -152,6 +159,14 @@
 		border:1px solid black;
 		margin: 0 auto;
 	} 
+	.shiftCol {
+		width: 50px;
+		text-align:center;
+	}
+	.dayCol { 
+		width: 240px;
+		text-align:center;
+	}
 }
 
 @page {

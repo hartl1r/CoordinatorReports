@@ -11,7 +11,7 @@
                 <h2>MONITOR COORDINATOR REPORTS</h2>
             </div>
             <div class="version">
-                <h4 class="version">ver. Jan 27, 2021</h4>
+                <h4 class="version">ver. Feb 13, 2021</h4>
             </div>  
         </div>
 
@@ -74,13 +74,17 @@
             <form id='reportsFormID' class="reportsForm" action="">
                 <p>Report(s) to email ...</p>
                 <input type="checkbox" id="scheduleID" name="reports" value="rptSchedule">
-                <label for="schedule"> Schedule</label><br>
+                <label id=scheduleLabel for="schedule"> Schedule</label>
+                <br>
                 <input type="checkbox" id="notesID" name="reports" value="rptNotes">
-                <label for="notes"> Notes</label><br>
+                <label id='notesLabel' for="notes"> Notes</label>
+                <br>
                 <input type="checkbox" id="contactsID" name="reports" value="rptContacts">
-                <label for="contacts"> Contacts</label><br>
+                <label id='contactsLabel' for="contacts"> Contacts</label>
+                <br>
                 <input type="checkbox" id="subListID" name="reports" value="rptSubs">
-                <label for="subs"> Available subs</label><br> 
+                <label id='subsLabel' for="subs"> Available subs</label>
+                <br> 
                 <button type="button" id="eMailReportBtn" class="spinner btn btn-sm btn-primary">
                     <span id="spinnerElement" class="spinner-border spinner-border-sm" style=display:none></span>
                     PREPARE PDF's

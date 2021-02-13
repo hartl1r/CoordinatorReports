@@ -30,6 +30,12 @@ mail=Mail(app)
 @app.route('/index', methods=['GET'])
 def index():
 
+    # STORE LAST_ACCEPTABLE_TRAINING_YEAR IN SESSION VARIABLE
+    lastAcceptableTrainingDate = db.session.query(ControlVariables.Last_Acceptable_Monitor_Training_Date).filter(ControlVariables.Shop_Number == 1).scalar()
+    lastAcceptableTrainingYear = lastAcceptableTrainingDate.year - 1
+    session['lastAcceptableTrainingYear'] = lastAcceptableTrainingYear
+    print('YEAR - ',lastAcceptableTrainingYear)
+
     # BUILD ARRAY OF NAMES FOR DROPDOWN LIST OF COORDINATORS
     coordNames=[]
     sqlNames = "SELECT Last_Name + ', ' + First_Name as coordName, Member_ID as coordID FROM tblMember_Data "
@@ -75,6 +81,9 @@ def index():
 def printWeeklyMonitorSchedule():
     dateScheduled=request.args.get('date')
     shopNumber=request.args.get('shop')
+
+    print('shopNumber - ',shopNumber)
+
     destination = request.args.get('destination')  # destination is 'PRINT or 'PDF'
    
     # LOOK UP SHOP NAME
@@ -167,7 +176,7 @@ def printWeeklyMonitorSchedule():
     sqlTCPM = "SELECT Count(tblMonitor_Schedule.Member_ID) AS TCPMrows "
     sqlTCPM += "FROM tblMonitor_Schedule "
     sqlTCPM += "WHERE tblMonitor_Schedule.Duty = 'Tool Crib' "
-    sqlTCPM += "AND tblMonitor_Schedule.AM_PM = 'AM' "
+    sqlTCPM += "AND tblMonitor_Schedule.AM_PM = 'PM' "
     sqlTCPM += "AND tblMonitor_Schedule.Shop_Number='" + shopNumber + "' "
     sqlTCPM += "AND tblMonitor_Schedule.Date_Scheduled >= '" + beginDateSTR + "' "
     sqlTCPM += "AND tblMonitor_Schedule.Date_Scheduled <= '" + endDateSTR + "' "
@@ -215,6 +224,7 @@ def printWeeklyMonitorSchedule():
     sqlSelectSM += "LEFT JOIN tblMonitor_Schedule ON tblMonitor_Schedule.Member_ID = tblMember_Data.Member_ID "
     sqlSelectSM += "LEFT JOIN tblShop_Names ON tblMonitor_Schedule.Shop_Number = tblShop_Names.Shop_Number "
     sqlSelectSM += "WHERE Date_Scheduled between '" + beginDateSTR + "' and '" + endDateSTR + "' "
+    sqlSelectSM += "and tblMonitor_Schedule.Shop_Number = " + shopNumber + " "
     sqlSelectSM += "ORDER BY dayOfWeek, AM_PM,Last_Name"
     SMschedule = db.engine.execute(sqlSelectSM)
 
@@ -230,6 +240,7 @@ def printWeeklyMonitorSchedule():
     sqlSelectTC += "LEFT JOIN tblShop_Names ON tblMonitor_Schedule.Shop_Number = tblShop_Names.Shop_Number "
     sqlSelectTC += "WHERE Date_Scheduled between '" + beginDateSTR + "' and '" + endDateSTR + "' "
     sqlSelectTC += " and tblMonitor_Schedule.Duty = 'Tool Crib' "
+    sqlSelectTC += "and tblMonitor_Schedule.Shop_Number = " + shopNumber + " "
     sqlSelectTC += "ORDER BY dayOfWeek, AM_PM, Last_Name"
     TCschedule = db.engine.execute(sqlSelectTC)
 
@@ -237,18 +248,21 @@ def printWeeklyMonitorSchedule():
     # ARE THERE ANY MEMBERS SCHEDULED?
     if SMschedule:
         for s in SMschedule:
-            
             # IS TRAINING NEEDED?
             if (s.waiver == None):
-                if (s.trainingYear == None):
+                if TrainingNeeded(s.trainingDate):
                     trainingNeeded = 'Y'
                 else:
-                    intTrainingYear = int(s.trainingYear) +2
-                    intScheduleYear = int(s.scheduleYear)
-                    if (intTrainingYear <= intScheduleYear):
-                        trainingNeeded = 'Y'
-                    else:
-                        trainingNeeded = 'N'
+                    trainingNeeded = 'N'
+                # if (s.trainingYear == None):
+                #     trainingNeeded = 'Y'
+                # else:
+                #     intTrainingYear = int(s.trainingYear) +2
+                #     intScheduleYear = int(s.scheduleYear)
+                #     if (intTrainingYear <= intScheduleYear):
+                #         trainingNeeded = 'Y'
+                #     else:
+                #         trainingNeeded = 'N'
             else:
                 trainingNeeded = 'N'
 
@@ -329,6 +343,7 @@ def printWeeklyMonitorSchedule():
             "enable-local-file-access": None
         }
         pdfkit.from_string(html,filePath, options=options)
+        flash('Schedule PDF created.','success')
         return redirect(url_for('index'))
         
         # USE THE FOLLOWING TO RENDER PDF TO SCREEN
@@ -340,7 +355,8 @@ def printWeeklyMonitorSchedule():
             SMAMrows=SMAMrows,SMPMrows=SMPMrows,TCAMrows=TCAMrows,TCPMrows=TCPMrows,\
             shopName=shopName,weekOf=beginDateSTR,coordinatorsName=coordinatorsName, coordinatorsEmail=coordinatorsEmail,\
             todays_date=todays_dateSTR,\
-            monDate=monDate,tueDate=tueDate,wedDate=wedDate,thuDate=thuDate,friDate=friDate,satDate=satDate)
+            monDate=monDate,tueDate=tueDate,wedDate=wedDate,thuDate=thuDate,friDate=friDate,satDate=satDate,\
+            beginDate=beginDateSTR,endDate=endDateSTR)
             
 
 #PRINT WEEKLY LIST OF CONTACTS FOR COORDINATOR
@@ -397,12 +413,16 @@ def printWeeklyMonitorContacts():
             if (m.trainingYear == None):  # if last training year is blank
                 needsTraining = 'Y'
             else:
-                intTrainingYear = int(m.trainingYear) +2  # int of last training year
-                intScheduleYear = int(m.scheduleYear) # int of schedule year
-                if (intTrainingYear <= intScheduleYear):
+                if TrainingNeeded(m.trainingDate):
                     needsTraining = 'Y'
                 else:
                     needsTraining = 'N'
+                # intTrainingYear = int(m.trainingYear) +2  # int of last training year
+                # intScheduleYear = int(m.scheduleYear) # int of schedule year
+                # if (intTrainingYear <= intScheduleYear):
+                #     needsTraining = 'Y'
+                # else:
+                #     needsTraining = 'N'
         else:
             needsTraining = 'N'
 
@@ -459,6 +479,7 @@ def printWeeklyMonitorContacts():
             "enable-local-file-access": None
         }
         pdfkit.from_string(html,filePath, options=options)
+        flash('Contact PDF created.','success')
         return redirect(url_for('index'))
     else:
         return render_template("rptWeeklyContacts.html",\
@@ -521,6 +542,7 @@ def printWeeklyMonitorNotes():
         filePath = pdfDirectoryPath + "/rptWeeklyNotes.pdf"    
         options = {"enable-local-file-access": None}
         pdfkit.from_string(html,filePath, options=options)
+        flash('Notes PDF created.','success')
         return redirect(url_for('index'))
     else:
         return render_template("rptWeeklyNotes.html",\
@@ -533,6 +555,14 @@ def printWeeklyMonitorNotes():
 @app.route("/printSubList", methods=["GET"])
 def printSubList():
     destination = request.args.get('destination')
+    shopNumber=request.args.get('shop')
+    print('shopNumber - ',shopNumber)
+    # GET LOCATION NAME FOR REPORT HEADING
+    shopRecord = db.session.query(ShopName).filter(ShopName.Shop_Number==shopNumber).first()
+    if shopRecord:
+        shopName = shopRecord.Shop_Name
+    else:
+        shopName = 'Not specified.'
     todays_date = date.today()
     todays_dateSTR = todays_date.strftime('%B %d, %Y')
     thisYear = todays_date.strftime('%Y')
@@ -551,7 +581,10 @@ def printSubList():
     sqlSubs += " Jul_Resident as Jul, Aug_Resident as Aug, Sep_Resident as Sep,"
     sqlSubs += " Oct_Resident as Oct, Nov_Resident as Nov, Dec_Resident as Dec"
     sqlSubs += " FROM tblMember_Data"
-    sqlSubs += " WHERE Monitor_Sub = 1 and Dues_Paid = 1"
+    if shopNumber == 1:
+        sqlSubs += " WHERE Monitor_Sub = 1 and Dues_Paid = 1"
+    else:
+        sqlSubs += " WHERE Monitor_Sub_2 = 1 and Dues_Paid = 1"
     sqlSubs += " ORDER BY Last_Name, First_Name " 
     subs = db.engine.execute(sqlSubs)
     
@@ -721,11 +754,12 @@ def printSubList():
         filePath = pdfDirectoryPath + "/rptSubList.pdf"
         options = {"enable-local-file-access": None}
         pdfkit.from_string(html,filePath, options=options)
+        flash('Sub List PDF created.','success')
         return redirect(url_for('index'))  
         
     else:
         return render_template("rptSubList.html",\
-            todaysDate=todays_dateSTR,subDict=subDict
+            todaysDate=todays_dateSTR,subDict=subDict,shopName=shopName
             )
         
     return redirect(url_for('/index'))
@@ -842,6 +876,7 @@ def printMonitorsNeedingTraining():
             "enable-local-file-access": None
         }
         pdfkit.from_string(html,filePath, options=options)
+        flash('Training Needed PDF created.','success')
         return redirect(url_for('index'))
     else:
         return render_template("rptTrainingNeeded.html",\
@@ -1108,22 +1143,30 @@ def RemovePDFfiles(pdfDirectoryPath):
     if (os.path.exists(filePath)):
         os.remove(filePath)
 
-def TrainingNeeded(lastTrainingDate): 
-    todays_date = date.today()
-    todays_dateSTR = todays_date.strftime('%-m-%-d-%Y')
-    thisYear = todays_date.strftime("%Y")
-    lastAcceptableTrainingYear = int(thisYear) - 2
+def TrainingNeeded(lastTrainingDate):
+    lastAcceptableTrainingYear = session['lastAcceptableTrainingYear'] 
+    print(lastTrainingDate,lastAcceptableTrainingYear)
+    # todays_date = date.today()
+    # todays_dateSTR = todays_date.strftime('%-m-%-d-%Y')
+    # thisYear = todays_date.strftime("%Y")
+    #lastAcceptableTrainingYear = int(thisYear) - 3
     
     if lastTrainingDate == None:
+        print('true 1')
         return True
     
-    try:
-        lastTrainingYear = lastTrainingDate.strftime("%Y")
-        if int(lastTrainingYear) <= lastAcceptableTrainingYear:
-            return True
-        else:
-            return False
-    except:
-        print ('Error in TrainingNeeded routine using - ', lastTrainingDate)
+    #try:
+        #lastTrainingYear = lastTrainingDate.strftime("%Y")
+    lastTrainingYear = lastTrainingDate.year
+        #if int(lastTrainingYear) <= lastAcceptableTrainingYear:
+    if lastTrainingYear <= lastAcceptableTrainingYear:
+        print('true 2')
         return True
+    else:
+        print('false')
+        return False
+    #except:
+        # print ('Error in TrainingNeeded routine using - ', lastTrainingDate)
+        # print('true 3')
+        # return True
 

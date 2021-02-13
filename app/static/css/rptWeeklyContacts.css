@@ -48,7 +48,20 @@
 	td {
 		font: size 10pt;
 	}
-    
+	/* .nameCol {
+		width:150px;
+		color:red;
+
+	}
+	.trainedCol {
+		width:100px;
+	}
+	.emailCol {
+		width:150px;
+	}
+	.phoneCol {
+		width:75px; 
+	}   */
 } 
 
 @media print {
@@ -120,7 +133,19 @@
 		break-after: avoid;
 		color:black;
 	}
-
+	.nameCol {
+		width:150px;
+		color:red;
+	}
+	.trainedCol {
+		width:100px;
+	}
+	.emailCol {
+		width:150px;
+	}
+	.phoneCol {
+		width:75px;
+	}
 }
 
 @page {

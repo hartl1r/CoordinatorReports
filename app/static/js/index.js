@@ -2,7 +2,6 @@
 //  PAGE LOAD ROUTINES
 // Declare global variables)
 
-// clientLocation, staffID will be set in localStorage within login routine
 var curCoordinatorID = 'All' //UPDATED FROM COORDINATOR SELECTION
 var clientLocation = ''  // Client location indicates where the computer (device) is operating or is being used on behalf of the location (RA/BW)
 var todaysDate = new Date();
@@ -76,20 +75,8 @@ document.getElementById("trainingDateSelected").addEventListener("click",showTra
 
 
 
-// GET STAFFID THAT WAS STORED BY THE LOGIN ROUTINE
-if (!localStorage.getItem('staffID')) {
-    staffID = prompt("Staff ID - ")
-    localStorage.setItem('staffID',staffID)
-}
-else {
-    staffID = localStorage.getItem('staffID')
-}
-
-
-
 // GET clientLocation THAT WAS STORED BY THE LOGIN ROUTINE
 if (!localStorage.getItem('clientLocation')) {
-    alert("local storage for 'clientLocation' is missing; RA assumed.")
     localStorage.setItem('clientLocation','RA')
 }
 clientLocation = localStorage.getItem('clientLocation')
@@ -164,7 +151,8 @@ $('#printMonitorContactsID').click(function(){
 })
 
 $('#printMonitorSubListID').click(function(){
-    window.location.href = '/printSubList'
+    link = '/printSubList?shop=' + curShopNumber
+    window.location.href = link
 })
 
 $('#printTrainingNeededID').click(function(){
@@ -348,7 +336,7 @@ function prepareAttachments(destination) {
         }
         return
     }
-    // SET FLAG TO INDICATE THAT THEIR IS AN EMAIL IN PROCESS; OTHERWISE PAGE LOAD WOULD HIDE THE EMAIL SECTIONS
+    // SET FLAG TO INDICATE THAT THERE IS AN EMAIL IN PROCESS; OTHERWISE PAGE LOAD WOULD HIDE THE EMAIL SECTIONS
     sessionStorage.setItem('processingEmail','TRUE')
 
     // FILL EMAIL FIELDS
@@ -398,6 +386,7 @@ function setShopFilter(shopLocation) {
     switch(shopLocation){
         case 'RA':
             localStorage.setItem('shopFilter','RA')
+            localStorage.setItem('clientLocation','RA')
             document.getElementById("shopChoice").selectedIndex = 0; //optItemion Rolling Acres
             shopFilter = 'RA'
             curShopNumber = '1'
@@ -405,6 +394,7 @@ function setShopFilter(shopLocation) {
             break;
         case 'BW':
             localStorage.setItem('shopFilter','BW')
+            localStorage.setItem('clientLocation','BW')
             document.getElementById("shopChoice").selectedIndex = 1; //optItemion Brownwood
             shopFilter = 'BW'
             curShopNumber = '2'
@@ -413,6 +403,7 @@ function setShopFilter(shopLocation) {
         default:
             alert('Missing local storage variable for shop location; RA assumed')
             localStorage.setItem('shopFilter','RA')
+            localStorage.setItem('clientLocation','RA')
             document.getElementById("shopChoice").selectedIndex = 0; //optItemion Rolling Acres
             shopFilter = 'RA'
             curShopNumber = '1'

@@ -9,8 +9,8 @@
 {% block content %} 
 <div class='wholePage'>
     <div class="pageButtons">
-        <button id="printPageButton" style=margin-right:20px; onClick="window.print();">PRINT</button>
-        <button id="closePageButton" style=margin-right:20px; onclick="window.history.back()" >CLOSE PAGE</button>
+        <button id="printPageButton" class='btn btn-primary btn-sm' style=margin-right:20px; onClick="window.print();">PRINT</button>
+        <button id="closePageButton" class='btn btn-secondary btn-sm' style=margin-right:20px; onclick="window.history.back()" >CLOSE</button>
     </div> 
     <br> <br>
     
@@ -22,15 +22,15 @@
     </div>
     
     <div>
-        <table style="display: inline block;"> 
+        <table class='table table-sm' style="display: inline block;"> 
             <caption>SHOP MONITOR DUTY</caption>                     
             <thead>
                 <tr>
-                    <th style="text-align:center">NAME</th>
-                    <th style="text-align:center">LAST TRAINED</th>
-                    <th style="text-align:center">EMAIL</th>
-                    <th style="text-align:center">HOME PHONE</th>
-                    <th style="text-align:center">CELL PHONE</th>
+                    <th class=nameCol style="text-align:center">NAME</th>
+                    <th class=trainedCol style="text-align:center">LAST TRAINED</th>
+                    <th class=emailCol style="text-align:center">EMAIL</th>
+                    <th class=phoneCol style="text-align:center">HOME PHONE</th>
+                    <th class=phoneCol style="text-align:center">CELL PHONE</th>
                 </tr> 
                 <hr>
             </thead> 
@@ -38,43 +38,43 @@
                 {% for monitor in SMmonitors %}
                     <tr>
                         {% if monitor['needsTraining'] != 'Y' %}
-                            <td style="text-align:left; background-color:white">{{monitor['name']}}</td>
+                            <td class=nameCol style="text-align:left; background-color:white">{{monitor['name']}}</td>
                         {% else %}
-                            <td style="text-align:left; background-color:yellow">{{monitor['name']}}</td>
+                            <td class=nameCol style="text-align:left; background-color:yellow">{{monitor['name']}}</td>
                         {% endif %}
-                        <td style="text-align:center">{{monitor['trainingYear']}}</td>
-                        <td style="text-align:left">{{monitor['eMail']}}</td>
-                        <td style="text-align:center">{{monitor['homePhone']}}</td>
-                        <td style="text-align:center">{{monitor['cellPhone']}}</td>
+                        <td class=trainedCol style="text-align:center">{{monitor['trainingYear']}}</td>
+                        <td class=emailCol style="text-align:left">{{monitor['eMail']}}</td>
+                        <td class=phoneCol style="text-align:center">{{monitor['homePhone']}}</td>
+                        <td class=phoneCol style="text-align:center">{{monitor['cellPhone']}}</td>
                     </tr> 
                 {% endfor %}
             </tbody>
         </table>
     </div>  
     <div>
-        <table style="display: inline block;">  
+        <table class='table table-sm' style="display: inline block;">  
             <caption>TOOL CRIB DUTY</caption>                    
             <thead>
                 <tr>
-                    <th style="text-align:center">NAME</th>
-                    <th style="text-align:center">LAST TRAINED</th>
-                    <th style="text-align:center">EMAIL</th>
-                    <th style="text-align:center">HOME PHONE</th>
-                    <th style="text-align:center">CELL PHONE</th>
+                    <th class=nameCol style="text-align:center">NAME</th>
+                    <th class=trainedCol style="text-align:center">LAST TRAINED</th>
+                    <th class=emailCol style="text-align:center">EMAIL</th>
+                    <th class=phoneCol style="text-align:center">HOME PHONE</th>
+                    <th class=phoneCol style="text-align:center">CELL PHONE</th>
                 </tr> 
             </thead> 
             <tbody>
                 {% for monitor in TCmonitors %}
                     <tr>
                         {% if monitor['needsTraining'] != 'Y' %}
-                            <td style="text-align:left; background-color:white">{{monitor['name']}}</td>
+                            <td class=nameCol style="text-align:left; background-color:white">{{monitor['name']}}</td>
                         {% else %}
-                            <td style="text-align:left; background-color:yellow">{{monitor['name']}}</td>
+                            <td class=nameCol style="text-align:left; background-color:yellow">{{monitor['name']}}</td>
                         {% endif %}
-                        <td style="text-align:center">{{monitor['trainingYear']}}</td>
-                        <td style="text-align:left">{{monitor['eMail']}}</td>
-                        <td style="text-align:center">{{monitor['homePhone']}}</td>
-                        <td style="text-align:center">{{monitor['cellPhone']}}</td>
+                        <td class=trainedCol style="text-align:center">{{monitor['trainingYear']}}</td>
+                        <td class=emailCol style="text-align:left">{{monitor['eMail']}}</td>
+                        <td class=phoneCol style="text-align:center">{{monitor['homePhone']}}</td>
+                        <td class=phoneCol style="text-align:center">{{monitor['cellPhone']}}</td>
                     </tr> 
                 {% endfor %}
             </tbody>
