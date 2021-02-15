@@ -34,7 +34,6 @@ def index():
     lastAcceptableTrainingDate = db.session.query(ControlVariables.Last_Acceptable_Monitor_Training_Date).filter(ControlVariables.Shop_Number == 1).scalar()
     lastAcceptableTrainingYear = lastAcceptableTrainingDate.year - 1
     session['lastAcceptableTrainingYear'] = lastAcceptableTrainingYear
-    print('YEAR - ',lastAcceptableTrainingYear)
 
     # BUILD ARRAY OF NAMES FOR DROPDOWN LIST OF COORDINATORS
     coordNames=[]
@@ -81,8 +80,6 @@ def index():
 def printWeeklyMonitorSchedule():
     dateScheduled=request.args.get('date')
     shopNumber=request.args.get('shop')
-
-    print('shopNumber - ',shopNumber)
 
     destination = request.args.get('destination')  # destination is 'PRINT or 'PDF'
    
@@ -556,7 +553,7 @@ def printWeeklyMonitorNotes():
 def printSubList():
     destination = request.args.get('destination')
     shopNumber=request.args.get('shop')
-    print('shopNumber - ',shopNumber)
+  
     # GET LOCATION NAME FOR REPORT HEADING
     shopRecord = db.session.query(ShopName).filter(ShopName.Shop_Number==shopNumber).first()
     if shopRecord:
@@ -1145,28 +1142,12 @@ def RemovePDFfiles(pdfDirectoryPath):
 
 def TrainingNeeded(lastTrainingDate):
     lastAcceptableTrainingYear = session['lastAcceptableTrainingYear'] 
-    print(lastTrainingDate,lastAcceptableTrainingYear)
-    # todays_date = date.today()
-    # todays_dateSTR = todays_date.strftime('%-m-%-d-%Y')
-    # thisYear = todays_date.strftime("%Y")
-    #lastAcceptableTrainingYear = int(thisYear) - 3
-    
     if lastTrainingDate == None:
-        print('true 1')
         return True
-    
-    #try:
-        #lastTrainingYear = lastTrainingDate.strftime("%Y")
     lastTrainingYear = lastTrainingDate.year
-        #if int(lastTrainingYear) <= lastAcceptableTrainingYear:
     if lastTrainingYear <= lastAcceptableTrainingYear:
-        print('true 2')
         return True
     else:
-        print('false')
         return False
-    #except:
-        # print ('Error in TrainingNeeded routine using - ', lastTrainingDate)
-        # print('true 3')
-        # return True
+   
 

@@ -20,13 +20,61 @@
         <h3 class="text-center">MONITORS FOR {{beginDate}} - {{endDate}}</h3>
         <h3 class="text-center">As of {{ todaysDate }}</h3>
     </div>
-    
-    <div>
-        <table class='table table-sm' style="display: inline block;"> 
+    <div class="monitorPanel">
+        <div class="row" >
+            <div class="tableCaption col-11">SHOP MONITOR DUTY</div>
+        </div>
+        <div class="row"  >
+            <div class="col-2 dtlCol">NAME</div>
+            <div class="col-2 dtlCol" style='text-align:center'>LAST TRAINED</div>
+            <div class="col-3 dtlCol">EMAIL</div>
+            <div class="col-2 dtlCol" style='text-align:center'>HOME PHONE</div>
+            <div class="col-2 dtlCol" style='text-align:center'>CELL PHONE</div>
+        </div>
+        {% for monitor in SMmonitors %}
+            <div class="row"  >
+                {% if monitor['needsTraining'] != 'Y' %}
+                    <div class="col-2 dtlCol" style=background-color:white>{{monitor['name']}}</div>
+                {% else %}
+                    <div class="col-2 dtlCol" style='background-color:yellow'>{{monitor['name']}}</div>
+                {% endif %}
+                <div class="col-2 dtlCol" style='text-align:center'>{{monitor['trainingYear']}}</div>
+                <div class="col-3 dtlCol" style='text-align:left'>{{monitor['eMail']}}</div>
+                <div class="col-2 dtlCol" style='text-align:center'>{{monitor['homePhone']}}</div>
+                <div class="col-2 dtlCol" style='text-align:center'>{{monitor['cellPhone']}}</div>
+            </div>
+        {% endfor %}   
+        <br><br>
+        <div class="row"  >
+            <div class="tableCaption col-11">TOOL CRIB DUTY</div>
+        </div>
+        <div class="row"  >
+            <div class="col-2 dtlCol">NAME</div>
+            <div class="col-2 dtlCol" style='text-align:center'>LAST TRAINED</div>
+            <div class="col-3 dtlCol">EMAIL</div>
+            <div class="col-2 dtlCol" style='text-align:center'>HOME PHONE</div>
+            <div class="col-2 dtlCol" style='text-align:center'>CELL PHONE</div>
+        </div>
+        {% for monitor in TCmonitors %}
+            <div class="row"  >
+                {% if monitor['needsTraining'] != 'Y' %}
+                    <div class="col-2 dtlCol" style='border:1px solid black;background-color:white'>{{monitor['name']}}</div>
+                {% else %}
+                    <div class="col-2 dtlCol" style='background-color:yellow'>{{monitor['name']}}</div>
+                {% endif %}
+                <div class="col-2 dtlCol" style='text-align:center'>{{monitor['trainingYear']}}</div>
+                <div class="col-3 dtlCol" style='text-align:left'>{{monitor['eMail']}}</div>
+                <div class="col-2 dtlCol" style='text-align:center'>{{monitor['homePhone']}}</div>
+                <div class="col-2 dtlCol" style='text-align:center'>{{monitor['cellPhone']}}</div>
+            </div>
+        {% endfor %}   
+    </div>    
+    <!-- <div>
+        <table style="display: inline block;"> 
             <caption>SHOP MONITOR DUTY</caption>                     
             <thead>
                 <tr>
-                    <th class=nameCol style="text-align:center">NAME</th>
+                    <th class='nameCol' style="text-align:center">NAME</th>
                     <th class=trainedCol style="text-align:center">LAST TRAINED</th>
                     <th class=emailCol style="text-align:center">EMAIL</th>
                     <th class=phoneCol style="text-align:center">HOME PHONE</th>
@@ -38,7 +86,7 @@
                 {% for monitor in SMmonitors %}
                     <tr>
                         {% if monitor['needsTraining'] != 'Y' %}
-                            <td class=nameCol style="text-align:left; background-color:white">{{monitor['name']}}</td>
+                            <td class='nameCol' style="text-align:left; background-color:white">{{monitor['name']}}</td>
                         {% else %}
                             <td class=nameCol style="text-align:left; background-color:yellow">{{monitor['name']}}</td>
                         {% endif %}
@@ -52,7 +100,7 @@
         </table>
     </div>  
     <div>
-        <table class='table table-sm' style="display: inline block;">  
+        <table style="display: inline block;">  
             <caption>TOOL CRIB DUTY</caption>                    
             <thead>
                 <tr>
@@ -79,7 +127,7 @@
                 {% endfor %}
             </tbody>
         </table>
-    </div>  
+    </div>   -->
 
 </div>
 {% endblock %} 

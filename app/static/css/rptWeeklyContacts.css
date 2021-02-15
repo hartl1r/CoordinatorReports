@@ -25,43 +25,19 @@
 	h3 {
 		font-size: 12pt;
 	}
-
-   	table {
-		width:80%;
-		margin:0 auto;
+	.monitorPanel {
+		padding-left:12em;
 	}
-	table caption {
-		text-align:center;
-		caption-side:top;
-		border:1px solid black;
-		font-weight: bold;
-		color:black;
-	}
-	th {
-		font:size 10pt;
-	}
-	
-	th, td {
+	.tableCaption {
 		border: 1px solid black;
-		text-align:left;  
+		text-align:center;
+		font-size:1.5rem;
+		font-weight:400;
 	}
-	td {
-		font: size 10pt;
+	.dtlCol {
+		border:1px solid black;	
 	}
-	/* .nameCol {
-		width:150px;
-		color:red;
-
-	}
-	.trainedCol {
-		width:100px;
-	}
-	.emailCol {
-		width:150px;
-	}
-	.phoneCol {
-		width:75px; 
-	}   */
+   	  
 } 
 
 @media print {
@@ -73,37 +49,7 @@
 		display:none;
 		float: none;
 	}
-	
-	table {
-		width:100%;
-		margin: 0 auto;
-	} 
-
-	table caption {
-		text-align:center;
-		caption-side:top;
-		border:1px solid black;
-		font-weight: bold;
-		color:black;
-	}
-
-	th {
-		font-size: 10pt;
-	}
-
-
-	th, td {
-		border:1px solid black;
-		color: black;
-		font-size: 12pt;
-	}
-
-	tfoot::after {
-		counter-increment:page;
-		content: "Page " counter(page) " of " counter(pages);
-	}
-
-	#reportFooter {
+		#reportFooter {
 		color:black;
 	}
 
@@ -133,18 +79,17 @@
 		break-after: avoid;
 		color:black;
 	}
-	.nameCol {
-		width:150px;
-		color:red;
+	.monitorPanel {
+		padding:2em;
 	}
-	.trainedCol {
-		width:100px;
+	.tableCaption {
+		border: 1px solid black;
+		text-align:center;
+		font-size:1.25rem;
+		font-weight:400;
 	}
-	.emailCol {
-		width:150px;
-	}
-	.phoneCol {
-		width:75px;
+	.dtlCol {
+		border:1px solid black;	
 	}
 }
 
